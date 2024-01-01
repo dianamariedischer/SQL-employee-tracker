@@ -1,9 +1,9 @@
 INSERT INTO department (name)
-VALUES ("Coolest Ever"),
+VALUES ("FOH"),
        ("Prep"),
        ("Kitchen"),
        ("Design"),
-       ("Dirtbag");
+       ("Exec");
        
 INSERT INTO role (title, salary, department_id)
 VALUES ("Soda Jerk", 18000, 1),
@@ -32,7 +32,7 @@ VALUES ("Eric", "Berley", 13, NULL),
        ("Mavis", "Rodriguez", 3, 7),
        ("Sue", "Pedraza", 3, 7),
        ("Cody", "Long", 3, 7),
-       ("Miles", "Meola", 2, 7),
+       ("Miles", "Meola", 1, 7),
        ("Callie", "Simmerly", 9, 5),
        ("Jonathan", "Vargas", 7, 4),
        ("Chloe", "Howard", 6, 11);
