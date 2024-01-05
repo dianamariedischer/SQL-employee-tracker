@@ -12,13 +12,13 @@ const init = () => {
       // MySQL password
       password: 'rootroot',
       database: 'employees_db'
-    },
-    console.log(`Connected to the employees_db database.`)
+    }
   );
 
   //use inquirer
   inquirer
     .prompt([
+      // Prompt user with a list of choices
       {
         type: 'list',
         message: 'What would you like to do?',
@@ -30,7 +30,8 @@ const init = () => {
           "Add a department",
           "Add a role",
           "Add an employee",
-          "Update an employee role"
+          "Update an employee role",
+          "Quit"
         ]
       }
     ])
@@ -41,6 +42,7 @@ const init = () => {
             console.log(err);
           }
           console.table(result);
+          init();
         });
       }
 
@@ -50,6 +52,7 @@ const init = () => {
             console.log(err);
           }
           console.table(result);
+          init();
         });
       }
 
@@ -59,6 +62,7 @@ const init = () => {
             console.log(err);
           }
           console.table(result);
+          init();
         });
       }
 
@@ -85,6 +89,7 @@ const init = () => {
                 console.log(err);
               }
               console.log("New department added.");
+              init();
             });
           })
       }
@@ -148,6 +153,7 @@ const init = () => {
                   console.log(err);
                 }
                 console.log("New role added.");
+                init();
               });
             })
         });
@@ -219,11 +225,13 @@ const init = () => {
               ])
               .then((response) => {
 
-                for (var i = 0; i < roleResult.length + employeeResult.length; i++) {
+                for (var i = 0; i < roleResult.length; i++) {
                   if (roleResult[i].title === response.role) {
                     var role = roleResult[i];
                   }
+                }
 
+                for (var i = 0; i < employeeResult.length; i++) {
                   if (employeeResult[i].first_name + " " + employeeResult[i].last_name === response.manager) {
                     var manager = employeeResult[i]
                   }
@@ -234,6 +242,7 @@ const init = () => {
                     console.log(err);
                   }
                   console.log("New employee added.");
+                  init();
                 });
               })
           })
@@ -300,7 +309,6 @@ const init = () => {
                     var role = roleResult[i];
                   }
                 }
-                console.log(role.id);
 
                 for (var i = 0; i < employeeResult.length; i++) {
                   if (employeeResult[i].first_name + " " + employeeResult[i].last_name === response.manager) {
@@ -311,20 +319,44 @@ const init = () => {
                     var employee = employeeResult[i]
                   }
                 }
-                console.log(manager.id);
-                console.log(employee.id);
 
                 db.query(`UPDATE employee SET role_id = '${role.id}', manager_id = '${manager.id}' WHERE id = ${employee.id};`, (err, result) => {
                   if (err) {
                     console.log(err);
                   }
                   console.log("Employee updated.");
+                  init();
                 })
             })
           })
         })
       };
+
+      if (response.action == "Quit") {
+        console.log("Laters")
+        db.end();
+      }
     })
 }
+
+
+// Adding console text
+console.log("")
+console.log("███████╗███╗   ███╗██████╗ ██╗      ██████╗ ██╗   ██╗███████╗███████╗")
+console.log("██╔════╝████╗ ████║██╔══██╗██║     ██╔═══██╗╚██╗ ██╔╝██╔════╝██╔════╝")
+console.log("█████╗  ██╔████╔██║██████╔╝██║     ██║   ██║ ╚████╔╝ █████╗  █████╗  ")
+console.log("██╔══╝  ██║╚██╔╝██║██╔═══╝ ██║     ██║   ██║  ╚██╔╝  ██╔══╝  ██╔══╝  ")
+console.log("███████╗██║ ╚═╝ ██║██║     ███████╗╚██████╔╝   ██║   ███████╗███████╗")
+console.log("╚══════╝╚═╝     ╚═╝╚═╝     ╚══════╝ ╚═════╝    ╚═╝   ╚══════╝╚══════╝")
+console.log("")                                                         
+console.log("███╗   ███╗ █████╗ ███╗   ██╗ █████╗  ██████╗ ███████╗██████╗        ")
+console.log("████╗ ████║██╔══██╗████╗  ██║██╔══██╗██╔════╝ ██╔════╝██╔══██╗       ")
+console.log("██╔████╔██║███████║██╔██╗ ██║███████║██║  ███╗█████╗  ██████╔╝       ")
+console.log("██║╚██╔╝██║██╔══██║██║╚██╗██║██╔══██║██║   ██║██╔══╝  ██╔══██╗       ")
+console.log("██║ ╚═╝ ██║██║  ██║██║ ╚████║██║  ██║╚██████╔╝███████╗██║  ██║       ")
+console.log("╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝       ")
+console.log("")
+console.log("---------------------------------------------------------------------")
+                                                                     
 
 init();
