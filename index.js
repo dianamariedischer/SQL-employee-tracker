@@ -44,7 +44,7 @@ const init = () => {
         });
       }
 
-      else if (response.action == "View all roles") {
+      if (response.action == "View all roles") {
         db.query(`SELECT * FROM role;`, (err, result) => {
           if (err) {
             console.log(err);
@@ -53,7 +53,7 @@ const init = () => {
         });
       }
 
-      else if (response.action == "View all employees") {
+      if (response.action == "View all employees") {
         db.query(`SELECT * FROM employee;`, (err, result) => {
           if (err) {
             console.log(err);
@@ -62,7 +62,7 @@ const init = () => {
         });
       }
 
-      else if (response.action == "Add a department") {
+      if (response.action == "Add a department") {
         inquirer
           .prompt([
             {
@@ -140,9 +140,9 @@ const init = () => {
             .then((response) => {
               for (var i = 0; i < result.length; i++) {
                 if (result[i].name === response.department) {
-                    var department = result[i];
+                  var department = result[i];
                 }
-            }
+              }
               db.query(`INSERT INTO role (title, salary, department_id) VALUES ("${response.role}", "${response.salary}", "${department.id}");`, (err, result) => {
                 if (err) {
                   console.log(err);
@@ -154,97 +154,168 @@ const init = () => {
       }
 
       if (response.action == "Add an employee") {
-        db.query(`SELECT *, role.title FROM employee;`, (err, result) => {
+        db.query(`SELECT * FROM employee;`, (err, employeeResult) => {
           if (err) {
             console.log(err);
           }
-          // Ask the user the name of the role, the salary, and which department it's in
-          console.log(result);
-          inquirer
-            .prompt([
-              {
-                type: 'input',
-                message: "What is the employee's first name?",
-                name: 'firstname',
-                validate: roleInput => {
-                  if (roleInput) {
-                    return true;
-                  } else {
-                    console.log('Please give the employee a first name.');
-                    return false;
-                  }
-                }
-              },
-              {
-                type: 'input',
-                message: "What is the employee's last name?",
-                name: 'lastname',
-                validate: salaryInput => {
-                  if (salaryInput) {
-                    return true;
-                  } else {
-                    console.log('Please give the employee a last name.');
-                    return false;
-                  }
-                }
-              },
-              {
-                type: 'list',
-                message: 'Which role is the employee in?',
-                name: 'role',
-                choices: () => {
-                  var array = [];
-                  for (var i = 0; i < result.length; i++) {
-                    if (!array.includes(result[i].title)) {
-                      array.push(result[i].title);
+          db.query(`SELECT * FROM role;`, (err, roleResult) => {
+            // Ask the user the name of the employee, their role, and their manager
+            inquirer
+              .prompt([
+                {
+                  type: 'input',
+                  message: "What is the employee's first name?",
+                  name: 'firstname',
+                  validate: roleInput => {
+                    if (roleInput) {
+                      return true;
+                    } else {
+                      console.log('Please give the employee a first name.');
+                      return false;
                     }
                   }
-                  return array;
-                }
-              },
-              {
-                type: 'list',
-                message: "Who is the employee's manager?",
-                name: 'manager',
-                choices: () => {
-                  var array = [];
-                  for (var i = 0; i < result.length; i++) {
-                    if (!array.includes(result[i].first_name + " " + result[i].last_name)) {
-                      array.push(result[i].first_name + " " + result[i].last_name);
+                },
+                {
+                  type: 'input',
+                  message: "What is the employee's last name?",
+                  name: 'lastname',
+                  validate: salaryInput => {
+                    if (salaryInput) {
+                      return true;
+                    } else {
+                      console.log('Please give the employee a last name.');
+                      return false;
                     }
                   }
-                  return array;
+                },
+                {
+                  type: 'list',
+                  message: 'Which role is the employee in?',
+                  name: 'role',
+                  choices: () => {
+                    var array = [];
+                    for (var i = 0; i < roleResult.length; i++) {
+                      if (!array.includes(roleResult[i].title)) {
+                        array.push(roleResult[i].title);
+                      }
+                    }
+                    return array;
+                  }
+                },
+                {
+                  type: 'list',
+                  message: "Who is the employee's manager?",
+                  name: 'manager',
+                  choices: () => {
+                    var array = [];
+                    for (var i = 0; i < employeeResult.length; i++) {
+                      if (!array.includes(employeeResult[i].first_name + " " + employeeResult[i].last_name)) {
+                        array.push(employeeResult[i].first_name + " " + employeeResult[i].last_name);
+                      }
+                    }
+                    return array;
+                  }
                 }
-              }
-            ])
-            .then((response) => {
+              ])
+              .then((response) => {
 
-            for (var i = 0; i < result.length; i++) {
-              if (result[i].title === response.role) {
-                var role = result[i];
-              }
+                for (var i = 0; i < roleResult.length; i++) {
+                  if (roleResult[i].title === response.role) {
+                    var role = roleResult[i];
+                  }
 
-              if (result[i].first_name + " " + result[i].last_name === response.manager) {
-                var manager = result[i]
-              }
-            }
-            console.log(manager);
-            console.log(employeeResult);
+                  if (employeeResult[i].first_name + " " + employeeResult[i].last_name === response.manager) {
+                    var manager = employeeResult[i]
+                  }
+                }
 
-            // db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ("${response.firstname}", "${response.lastname}", "${role.role_id}");`, (err, result) => {
-            //   if (err) {
-            //     console.log(err);
-            //   }
-            //   console.log("New employee added.");
-            // });
+                db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ("${response.firstname}", "${response.lastname}", "${role.id}", "${manager.id}");`, (err, result) => {
+                  if (err) {
+                    console.log(err);
+                  }
+                  console.log("New employee added.");
+                });
+              })
           })
+
         });
       }
 
       if (response.action == "Update an employee role") {
-        console.log("ah")
-      }
-    });
+        db.query(`SELECT * FROM employee;`, (err, employeeResult) => {
+          if (err) {
+            console.log(err);
+          }
+          db.query(`SELECT * FROM role;`, (err, roleResult) => {
+            // Ask the user for the name of the employee, and their new role
+            inquirer
+              .prompt([
+                {
+                  type: 'list',
+                  message: 'Which employee is changing roles?',
+                  name: 'employee',
+                  choices: () => {
+                    var array = [];
+                    for (var i = 0; i < employeeResult.length; i++) {
+                      if (!array.includes(employeeResult[i].first_name + " " + employeeResult[i].last_name)) {
+                        array.push(employeeResult[i].first_name + " " + employeeResult[i].last_name);
+                      }
+                    }
+                    return array;
+                  }
+                },
+                {
+                  type: 'list',
+                  message: "What is the employee's new role?",
+                  name: 'role',
+                  choices: () => {
+                    var array = [];
+                    for (var i = 0; i < roleResult.length; i++) {
+                      if (!array.includes(roleResult[i].title)) {
+                        array.push(roleResult[i].title);
+                      }
+                    }
+                    return array;
+                  }
+                },
+                {
+                  type: 'list',
+                  message: "Who is the employee's new manager?",
+                  name: 'manager',
+                  choices: () => {
+                    var array = [];
+                    for (var i = 0; i < employeeResult.length; i++) {
+                      if (!array.includes(employeeResult[i].first_name + " " + employeeResult[i].last_name)) {
+                        array.push(employeeResult[i].first_name + " " + employeeResult[i].last_name);
+                      }
+                    }
+                    return array;
+                  }
+                }
+              ])
+              .then((response) => {
+
+                for (var i = 0; i < roleResult.length; i++) {
+                  if (roleResult[i].title === response.role) {
+                    var role = roleResult[i];
+                  }
+
+                  if (employeeResult[i].first_name + " " + employeeResult[i].last_name === response.manager) {
+                    var manager = employeeResult[i]
+                  }
+                }
+
+                db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ("${response.firstname}", "${response.lastname}", "${role.id}", "${manager.id}");`, (err, result) => {
+                  if (err) {
+                    console.log(err);
+                  }
+                  console.log("New employee added.");
+                })
+            })
+          })
+        })
+      };
+    })
 }
 
 init();
