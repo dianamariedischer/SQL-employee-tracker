@@ -23,9 +23,9 @@ CREATE TABLE role (
   -- Makes a numeric column called "department_id" which references the id in department to retrieve the employees department --
   department_id INT, 
   FOREIGN KEY (department_id)
-  REFERENCES department(id) 
+    REFERENCES department(id) 
   -- If the referenced department is deleted the department_id value is set to null --
-  ON DELETE SET NULL
+    ON DELETE SET NULL
 );
 
 -- Creates the table "employee" within employees_db --
@@ -34,10 +34,13 @@ CREATE TABLE employee (
   first_name VARCHAR(30) NOT NULL,
   last_name VARCHAR(30) NOT NULL,
   role_id INT,
+  manager_id INT,
   -- Makes a numeric column called "role_id" which references the id in role to retrieve the employees role --
   FOREIGN KEY (role_id)
-  REFERENCES role(id) 
-  ON DELETE SET NULL,
-  manager_id INT REFERENCES employee(id)
-  ON DELETE SET NULL
+    REFERENCES role(id) 
+    ON DELETE SET NULL,
+  -- Makes a numeric column called "manager_id" which references the employee id in this table --
+  FOREIGN KEY (manager_id) 
+    REFERENCES employee(id)
+    ON DELETE SET NULL
 );

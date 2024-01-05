@@ -1,4 +1,4 @@
-// Import and require mysql2
+// Import and require mysql2, inquirer, and console table
 const mysql = require('mysql2');
 const inquirer = require('inquirer');
 
@@ -40,7 +40,7 @@ const init = () => {
           if (err) {
             console.log(err);
           }
-          console.log(result);
+          console.table(result);
         });
       }
 
@@ -49,7 +49,7 @@ const init = () => {
           if (err) {
             console.log(err);
           }
-          console.log(result);
+          console.table(result);
         });
       }
 
@@ -58,7 +58,7 @@ const init = () => {
           if (err) {
             console.log(err);
           }
-          console.log(result);
+          console.table(result);
         });
       }
 
@@ -219,7 +219,7 @@ const init = () => {
               ])
               .then((response) => {
 
-                for (var i = 0; i < roleResult.length; i++) {
+                for (var i = 0; i < roleResult.length + employeeResult.length; i++) {
                   if (roleResult[i].title === response.role) {
                     var role = roleResult[i];
                   }
@@ -299,17 +299,26 @@ const init = () => {
                   if (roleResult[i].title === response.role) {
                     var role = roleResult[i];
                   }
+                }
+                console.log(role.id);
 
+                for (var i = 0; i < employeeResult.length; i++) {
                   if (employeeResult[i].first_name + " " + employeeResult[i].last_name === response.manager) {
                     var manager = employeeResult[i]
                   }
-                }
 
-                db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ("${response.firstname}", "${response.lastname}", "${role.id}", "${manager.id}");`, (err, result) => {
+                  if (employeeResult[i].first_name + " " + employeeResult[i].last_name === response.employee) {
+                    var employee = employeeResult[i]
+                  }
+                }
+                console.log(manager.id);
+                console.log(employee.id);
+
+                db.query(`UPDATE employee SET role_id = '${role.id}', manager_id = '${manager.id}' WHERE id = ${employee.id};`, (err, result) => {
                   if (err) {
                     console.log(err);
                   }
-                  console.log("New employee added.");
+                  console.log("Employee updated.");
                 })
             })
           })
