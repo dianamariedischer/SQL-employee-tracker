@@ -1,3 +1,4 @@
+-- add values to department
 INSERT INTO department (name)
 VALUES ("FOH"),
        ("Prep"),
@@ -5,6 +6,7 @@ VALUES ("FOH"),
        ("Design"),
        ("Exec");
        
+-- add values to role
 INSERT INTO role (title, salary, department_id)
 VALUES ("Soda Jerk", 18000, 1),
        ("Senior Soda Jerk", 23000, 1),
@@ -20,6 +22,7 @@ VALUES ("Soda Jerk", 18000, 1),
        ("Design Director", 85000, 5),
        ("Owner", 250000, 5);
 
+-- add values to employee
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
 VALUES ("Eric", "Berley", 13, NULL),
        ("Ryan", "Berley", 13, NULL),
